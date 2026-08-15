@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { SAMPLE_MENU, BUSINESS_INFO } from '../data/restaurantData';
+import { useCMS } from '../context/CMSContext';
 import { MenuItem } from '../types';
 import { Utensils, Flame, Leaf, Sparkles, Info, Plus, Check, ShoppingBag, PhoneCall } from 'lucide-react';
 
 export const MenuSection: React.FC = () => {
+  const { menuItems, siteSettings } = useCMS();
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [dietFilter, setDietFilter] = useState<'all' | 'veg' | 'nonveg'>('all');
   const [wishlist, setWishlist] = useState<{ item: MenuItem; qty: number }[]>([]);
@@ -19,7 +20,7 @@ export const MenuSection: React.FC = () => {
     { id: 'desserts', label: 'Desserts' },
   ];
 
-  const filteredItems = SAMPLE_MENU.filter((item) => {
+  const filteredItems = menuItems.filter((item) => {
     const matchesCategory = activeCategory === 'all' || item.category === activeCategory;
     const matchesDiet =
       dietFilter === 'all' ||
@@ -244,11 +245,11 @@ export const MenuSection: React.FC = () => {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
-              href={`tel:${BUSINESS_INFO.phone}`}
+              href={`tel:${siteSettings.phone}`}
               className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#E08E45] text-[#10261D] font-bold text-sm hover:bg-[#C87D32] transition-colors flex items-center justify-center gap-2 shadow-lg"
             >
               <PhoneCall className="w-4 h-4" />
-              <span>Call +977 9801000007</span>
+              <span>Call {siteSettings.phoneDisplay}</span>
             </a>
             <a
               href="#contact"
@@ -329,7 +330,7 @@ export const MenuSection: React.FC = () => {
 
             <div className="space-y-2">
               <a
-                href={`tel:${BUSINESS_INFO.phone}`}
+                href={`tel:${siteSettings.phone}`}
                 className="w-full py-3 rounded-xl bg-[#E08E45] text-[#10261D] font-bold text-center block text-sm shadow-md"
               >
                 Call Restaurant to Reserve & Pre-Order

@@ -1,8 +1,11 @@
 import React from 'react';
 import { Compass, Sun, Heart, Music2 } from 'lucide-react';
-import { BUSINESS_INFO } from '../data/restaurantData';
+import { useCMS } from '../context/CMSContext';
 
 export const Story: React.FC = () => {
+  const { siteSettings } = useCMS();
+  const story = siteSettings.storyContent;
+
   return (
     <section id="story" className="py-24 bg-[#F9F6F0] text-[#1F2421] relative overflow-hidden border-y border-[#EFE9DD]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -14,7 +17,7 @@ export const Story: React.FC = () => {
             {/* Main Image */}
             <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
               <img
-                src={BUSINESS_INFO.images.outdoors}
+                src={siteSettings.images.outdoors}
                 alt="Countryside Garden at Buglay Rock Farm House"
                 className="w-full h-[400px] sm:h-[480px] object-cover"
                 referrerPolicy="no-referrer"
@@ -23,10 +26,10 @@ export const Story: React.FC = () => {
               
               <div className="absolute bottom-6 left-6 right-6 sm:max-w-[62%] text-white z-0">
                 <span className="text-xs uppercase tracking-widest text-[#E08E45] font-bold block mb-1 drop-shadow">
-                  Lalitpur 44709, Nepal
+                  {siteSettings.address}
                 </span>
                 <p className="font-serif text-xl sm:text-2xl font-bold leading-snug drop-shadow-md">
-                  Fresh Air, Open Skies & Mountain Silence
+                  {story.subtitle}
                 </p>
               </div>
             </div>
@@ -51,15 +54,15 @@ export const Story: React.FC = () => {
             </div>
 
             <h2 className="font-serif text-3xl sm:text-5xl font-bold text-[#10261D] tracking-tight leading-tight">
-              A Little Escape in the Hills
+              {story.title}
             </h2>
 
             <p className="text-base sm:text-lg text-[#1F2421]/90 font-light leading-relaxed">
-              Nestled in the peaceful greenery of Lalitpur near Godawari, Buglay Rock Farm House was created as a gentle sanctuary away from the hustle of urban life. Here, time slows down to the rhythm of mountain breezes and sizzling fires.
+              {story.paragraph1}
             </p>
 
             <p className="text-base text-[#1F2421]/80 leading-relaxed">
-              Whether you are sharing a freshly cooked farmhouse platter with family, listening to live guitar strings under festoon lights, or watching children play safely on open lawns, Buglay Rock Farm House is designed for lingering conversations and genuine warmth.
+              {story.paragraph2}
             </p>
 
             {/* Core Values / Pillar Icons */}

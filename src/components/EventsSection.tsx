@@ -1,12 +1,13 @@
 import React from 'react';
 import { Calendar, Users, Music, PartyPopper, Heart, Sparkles, ArrowRight, PhoneCall } from 'lucide-react';
-import { BUSINESS_INFO } from '../data/restaurantData';
+import { useCMS } from '../context/CMSContext';
 
 interface EventsSectionProps {
   onOpenInquiry: () => void;
 }
 
 export const EventsSection: React.FC<EventsSectionProps> = ({ onOpenInquiry }) => {
+  const { siteSettings } = useCMS();
   const eventCategories = [
     {
       title: 'Family Gatherings',
@@ -126,11 +127,11 @@ export const EventsSection: React.FC<EventsSectionProps> = ({ onOpenInquiry }) =
                 Plan Your Visit / Send Inquiry
               </button>
               <a
-                href={`tel:${BUSINESS_INFO.phone}`}
+                href={`tel:${siteSettings.phone}`}
                 className="w-full sm:w-auto px-8 py-4 rounded-full bg-[#254F3D] text-[#FDFAF5] font-semibold text-base hover:bg-[#336B53] transition-colors flex items-center justify-center gap-2"
               >
                 <PhoneCall className="w-4 h-4 text-[#E08E45]" />
-                <span>Call {BUSINESS_INFO.phoneDisplay}</span>
+                <span>Call {siteSettings.phoneDisplay}</span>
               </a>
             </div>
           </div>

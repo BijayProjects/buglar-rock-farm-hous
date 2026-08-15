@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Star, MessageSquare, ExternalLink, X, Quote, ShieldCheck } from 'lucide-react';
-import { TESTIMONIALS, BUSINESS_INFO } from '../data/restaurantData';
+import { useCMS } from '../context/CMSContext';
 
 export const SocialProof: React.FC = () => {
+  const { testimonials, siteSettings } = useCMS();
   const [reviewsModalOpen, setReviewsModalOpen] = useState(false);
 
   return (
@@ -24,7 +25,7 @@ export const SocialProof: React.FC = () => {
           {/* Rating Summary Box */}
           <div className="flex items-center gap-4 bg-[#10261D] text-[#FDFAF5] p-4 sm:p-5 rounded-2xl shadow-md border border-[#254F3D]">
             <div className="text-3xl sm:text-4xl font-serif font-bold text-[#E08E45]">
-              {BUSINESS_INFO.rating}★
+              {siteSettings.rating}★
             </div>
             <div>
               <div className="flex text-[#E08E45] mb-1">
@@ -33,7 +34,7 @@ export const SocialProof: React.FC = () => {
                 ))}
               </div>
               <p className="text-xs text-[#EFE9DD]/80 font-medium">
-                Based on <span className="text-[#E08E45] font-bold">{BUSINESS_INFO.reviewCount}</span> public Google reviews
+                Based on <span className="text-[#E08E45] font-bold">{siteSettings.reviewCount}</span> public Google reviews
               </p>
             </div>
           </div>
@@ -41,7 +42,7 @@ export const SocialProof: React.FC = () => {
 
         {/* Testimonials Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {TESTIMONIALS.map((review) => (
+          {testimonials.map((review) => (
             <div
               key={review.id}
               className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md border border-[#EFE9DD] transition-all flex flex-col justify-between relative group"
@@ -126,7 +127,7 @@ export const SocialProof: React.FC = () => {
               </p>
 
               <div className="space-y-3.5 mb-8">
-                {TESTIMONIALS.map((review) => (
+                {testimonials.map((review) => (
                   <div key={review.id} className="p-4 rounded-2xl bg-white border border-[#EFE9DD] shadow-sm">
                     <div className="flex items-center justify-between mb-2">
                       <div>
@@ -146,7 +147,7 @@ export const SocialProof: React.FC = () => {
 
               <div className="flex flex-col sm:flex-row gap-3 pt-2 border-t border-[#EFE9DD]">
                 <a
-                  href={BUSINESS_INFO.googleMapsUrl}
+                  href={siteSettings.googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 py-3 px-4 rounded-xl bg-[#E08E45] text-[#10261D] font-bold text-center text-sm hover:bg-[#C87D32] transition-colors flex items-center justify-center gap-2 shadow"

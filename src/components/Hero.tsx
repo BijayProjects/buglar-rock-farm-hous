@@ -1,13 +1,15 @@
 import React from 'react';
 import { Star, MapPin, Compass } from 'lucide-react';
 import { motion } from 'motion/react';
-import { BUSINESS_INFO } from '../data/restaurantData';
+import { useCMS } from '../context/CMSContext';
 
 interface HeroProps {
   onOpenInquiry: () => void;
 }
 
 export const Hero: React.FC<HeroProps> = () => {
+  const { siteSettings } = useCMS();
+
   return (
     <section id="hero" className="relative min-h-screen flex items-center justify-center pt-24 pb-16 overflow-hidden bg-[#10261D]">
       {/* Background Image with Overlay */}
@@ -16,7 +18,7 @@ export const Hero: React.FC<HeroProps> = () => {
           initial={{ scale: 1.1, opacity: 0.8 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 1.2, ease: 'easeOut' }}
-          src={BUSINESS_INFO.images.hero}
+          src={siteSettings.images.hero}
           alt="Buglay Rock Farm House Atmosphere in Lalitpur"
           className="w-full h-full object-cover object-center"
           referrerPolicy="no-referrer"
@@ -41,7 +43,7 @@ export const Hero: React.FC<HeroProps> = () => {
             ))}
           </div>
           <span className="text-xs sm:text-sm font-semibold text-[#FDFAF5]">
-            ★ {BUSINESS_INFO.rating} / 5 • {BUSINESS_INFO.reviewCount} Guest Reviews
+            ★ {siteSettings.rating} / 5 • {siteSettings.reviewCount} Guest Reviews
           </span>
         </motion.div>
 
@@ -52,7 +54,10 @@ export const Hero: React.FC<HeroProps> = () => {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="font-serif text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-[#FDFAF5] tracking-tight leading-[1.08] mb-6 drop-shadow-md"
         >
-          Escape the <span className="italic font-normal text-[#E08E45]">Ordinary.</span>
+          {siteSettings.heroHeadline}{' '}
+          <span className="italic font-normal text-[#E08E45]">
+            {siteSettings.heroHeadlineHighlight || 'Ordinary.'}
+          </span>
         </motion.h1>
 
         {/* Subtitle */}
@@ -62,7 +67,7 @@ export const Hero: React.FC<HeroProps> = () => {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="max-w-2xl mx-auto text-lg sm:text-2xl text-[#EFE9DD]/90 font-light leading-relaxed mb-10 text-shadow"
         >
-          {BUSINESS_INFO.heroSubheadline}
+          {siteSettings.heroSubheadline}
         </motion.p>
 
         {/* Call to Actions */}

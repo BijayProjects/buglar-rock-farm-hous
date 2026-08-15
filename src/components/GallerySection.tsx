@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { GALLERY_ITEMS, BUSINESS_INFO } from '../data/restaurantData';
+import { useCMS } from '../context/CMSContext';
 import { GalleryItem } from '../types';
 import { Image as ImageIcon, Instagram, Facebook, X, ZoomIn, Info } from 'lucide-react';
 
 export const GallerySection: React.FC = () => {
+  const { galleryItems, siteSettings } = useCMS();
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [lightboxImage, setLightboxImage] = useState<GalleryItem | null>(null);
 
@@ -16,7 +17,7 @@ export const GallerySection: React.FC = () => {
     { id: 'people', label: 'Gatherings' },
   ];
 
-  const filteredItems = GALLERY_ITEMS.filter(
+  const filteredItems = galleryItems.filter(
     (item) => activeCategory === 'all' || item.category === activeCategory
   );
 

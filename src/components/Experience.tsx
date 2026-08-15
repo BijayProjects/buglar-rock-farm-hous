@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { EXPERIENCES, BUSINESS_INFO } from '../data/restaurantData';
+import { useCMS } from '../context/CMSContext';
 import { ExperienceItem } from '../types';
 import { Sparkles, ArrowRight, CheckCircle2, X, Phone } from 'lucide-react';
 
 export const Experience: React.FC = () => {
+  const { experiences, siteSettings } = useCMS();
   const [selectedExperience, setSelectedExperience] = useState<ExperienceItem | null>(null);
 
   return (
@@ -30,7 +31,7 @@ export const Experience: React.FC = () => {
 
         {/* 6 Visual Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {EXPERIENCES.map((exp) => (
+          {experiences.map((exp) => (
             <div
               key={exp.id}
               onClick={() => setSelectedExperience(exp)}
@@ -144,11 +145,11 @@ export const Experience: React.FC = () => {
 
               <div className="pt-4 border-t border-[#254F3D] flex flex-col sm:flex-row gap-3">
                 <a
-                  href={`tel:${BUSINESS_INFO.phone}`}
+                  href={`tel:${siteSettings.phone}`}
                   className="flex-1 py-3 px-4 rounded-xl bg-[#E08E45] text-[#10261D] font-bold text-center text-sm hover:bg-[#C87D32] transition-colors flex items-center justify-center gap-2 shadow"
                 >
                   <Phone className="w-4 h-4" />
-                  <span>Call {BUSINESS_INFO.phoneDisplay} to Reserve</span>
+                  <span>Call {siteSettings.phoneDisplay} to Reserve</span>
                 </a>
                 <button
                   onClick={() => setSelectedExperience(null)}

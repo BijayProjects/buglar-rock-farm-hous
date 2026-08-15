@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, PhoneCall, MapPin, Menu as MenuIcon, X, Sparkles, Compass, Utensils, Calendar, CalendarCheck, Image as ImageIcon, Info } from 'lucide-react';
-import { BUSINESS_INFO } from '../data/restaurantData';
+import { Phone, PhoneCall, MapPin, Menu as MenuIcon, X, Sparkles, Compass, Utensils, Calendar, CalendarCheck, Image as ImageIcon, Info, BookOpen } from 'lucide-react';
+import { useCMS } from '../context/CMSContext';
 
 interface NavbarProps {
   onOpenInquiry: () => void;
+  currentPage: string;
+  onNavigate: (page: string) => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenInquiry }) => {
+export const Navbar: React.FC<NavbarProps> = ({
+  onOpenInquiry,
+  currentPage,
+  onNavigate,
+}) => {
+  const { siteSettings } = useCMS();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -35,14 +42,21 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenInquiry }) => {
   }, [mobileMenuOpen]);
 
   const navLinks = [
-    { name: 'Home', href: '#hero', icon: Compass },
-    { name: 'Experience', href: '#experience', icon: Sparkles },
-    { name: 'Menu', href: '#menu', icon: Utensils },
-    { name: 'Story', href: '#story', icon: Info },
-    { name: 'Events', href: '#events', icon: Calendar },
-    { name: 'Gallery', href: '#gallery', icon: ImageIcon },
-    { name: 'Location', href: '#location', icon: MapPin },
+    { id: 'home', name: 'Home', href: '#home', icon: Compass },
+    { id: 'experience', name: 'Experience', href: '#experience', icon: Sparkles },
+    { id: 'menu', name: 'Menu', href: '#menu', icon: Utensils },
+    { id: 'story', name: 'Story', href: '#story', icon: Info },
+    { id: 'events', name: 'Events', href: '#events', icon: Calendar },
+    { id: 'gallery', name: 'Gallery', href: '#gallery', icon: ImageIcon },
+    { id: 'blog', name: 'Blog', href: '#blog', icon: BookOpen },
+    { id: 'location', name: 'Location', href: '#location', icon: MapPin },
   ];
+
+  const handleNavClick = (pageId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    onNavigate(pageId);
+    setMobileMenuOpen(false);
+  };
 
   return (
     <>
@@ -57,10 +71,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenInquiry }) => {
           <div className="flex items-center justify-between relative">
             {/* Left: Logo */}
             <div className="flex items-center shrink-0">
-              <a href="#hero" className="group flex items-center" aria-label="Buglay Rock Farm House Home">
+              <a
+                href="#home"
+                onClick={(e) => handleNavClick('home', e)}
+                className="group flex items-center"
+                aria-label="Buglay Rock Farm House Home"
+              >
                 <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden border border-[#E08E45]/60 bg-[#10261D] shadow-md group-hover:scale-105 group-hover:border-[#E08E45] transition-all flex items-center justify-center p-0.5 shrink-0">
                   <img
-                    src={BUSINESS_INFO.logo}
+                    src={siteSettings.logo}
                     alt="Buglay Rock Farm House Logo"
                     className="w-full h-full object-cover object-center rounded-full"
                     referrerPolicy="no-referrer"
@@ -71,15 +90,23 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenInquiry }) => {
 
             {/* Center: Desktop Navigation Links */}
             <nav className="hidden lg:flex items-center gap-7 absolute left-1/2 -translate-x-1/2">
-              {navLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className="text-sm font-medium text-[#FDFAF5]/90 hover:text-[#E08E45] transition-colors relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#E08E45] hover:after:w-full after:transition-all"
-                >
-                  {link.name}
-                </a>
-              ))}
+              {navLinks.map((link) => {
+                const isActive = currentPage === link.id;
+                return (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    onClick={(e) => handleNavClick(link.id, e)}
+                    className={`text-sm font-medium transition-colors relative py-1 ${
+                      isActive
+                        ? 'text-[#E08E45] font-semibold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#E08E45]'
+                        : 'text-[#FDFAF5]/90 hover:text-[#E08E45] after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#E08E45] hover:after:w-full after:transition-all'
+                    }`}
+                  >
+                    {link.name}
+                  </a>
+                );
+              })}
             </nav>
 
             {/* Right: Desktop Action CTAs */}
@@ -94,9 +121,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenInquiry }) => {
               </button>
 
               <a
-                href={`tel:${BUSINESS_INFO.phone}`}
-                title={`Call ${BUSINESS_INFO.phoneDisplay}`}
-                aria-label={`Call ${BUSINESS_INFO.phoneDisplay}`}
+                href={`tel:${siteSettings.phone}`}
+                title={`Call ${siteSettings.phoneDisplay}`}
+                aria-label={`Call ${siteSettings.phoneDisplay}`}
                 className="p-2.5 rounded-full bg-[#E08E45] text-[#10261D] hover:bg-[#C87D32] transition-colors shadow-md flex items-center justify-center"
               >
                 <PhoneCall className="w-4 h-4" />
@@ -115,9 +142,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenInquiry }) => {
               </button>
 
               <a
-                href={`tel:${BUSINESS_INFO.phone}`}
-                title={`Call ${BUSINESS_INFO.phoneDisplay}`}
-                aria-label={`Call ${BUSINESS_INFO.phoneDisplay}`}
+                href={`tel:${siteSettings.phone}`}
+                title={`Call ${siteSettings.phoneDisplay}`}
+                aria-label={`Call ${siteSettings.phoneDisplay}`}
                 className="w-10 h-10 rounded-full bg-[#E08E45] text-[#10261D] hover:bg-[#C87D32] transition-colors shadow-sm flex items-center justify-center shrink-0"
               >
                 <PhoneCall className="w-4 h-4" />
@@ -153,7 +180,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenInquiry }) => {
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full overflow-hidden border border-[#E08E45]/60 bg-[#10261D] flex items-center justify-center p-0.5 shrink-0 shadow-md">
                     <img
-                      src={BUSINESS_INFO.logo}
+                      src={siteSettings.logo}
                       alt="Buglay Rock Farm House Logo"
                       className="w-full h-full object-cover object-center rounded-full"
                       referrerPolicy="no-referrer"
@@ -161,7 +188,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenInquiry }) => {
                   </div>
                   <div>
                     <span className="block font-serif font-bold text-base sm:text-lg text-[#FDFAF5] leading-tight">
-                      {BUSINESS_INFO.name}
+                      {siteSettings.name}
                     </span>
                     <span className="block text-[10px] uppercase tracking-wider text-[#E08E45] font-medium">
                       Farm House & Restro
@@ -182,15 +209,26 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenInquiry }) => {
               <nav className="space-y-1.5" aria-label="Mobile Navigation">
                 {navLinks.map((link) => {
                   const Icon = link.icon;
+                  const isActive = currentPage === link.id;
                   return (
                     <a
                       key={link.name}
                       href={link.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-base font-medium text-[#FDFAF5] hover:bg-[#254F3D] hover:text-[#E08E45] transition-all group"
+                      onClick={(e) => handleNavClick(link.id, e)}
+                      className={`flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-base font-medium transition-all group ${
+                        isActive
+                          ? 'bg-[#254F3D] text-[#E08E45] font-semibold border border-[#E08E45]/30'
+                          : 'text-[#FDFAF5] hover:bg-[#254F3D] hover:text-[#E08E45]'
+                      }`}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-[#254F3D]/60 group-hover:bg-[#E08E45]/20 flex items-center justify-center shrink-0 transition-colors">
-                        <Icon className="w-4 h-4 text-[#E08E45]" />
+                      <div
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                          isActive
+                            ? 'bg-[#E08E45] text-[#10261D]'
+                            : 'bg-[#254F3D]/60 text-[#E08E45] group-hover:bg-[#E08E45]/20'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4" />
                       </div>
                       <span className="tracking-wide">{link.name}</span>
                     </a>
@@ -202,11 +240,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenInquiry }) => {
             {/* Drawer Bottom Actions */}
             <div className="p-5 sm:p-6 space-y-3 bg-[#0B1A14] border-t border-[#254F3D]">
               <a
-                href={`tel:${BUSINESS_INFO.phone}`}
+                href={`tel:${siteSettings.phone}`}
                 className="w-full py-3 px-4 rounded-xl bg-[#E08E45] text-[#10261D] font-bold text-sm text-center flex items-center justify-center gap-2 hover:bg-[#C87D32] transition-colors shadow-md"
               >
                 <PhoneCall className="w-4 h-4" />
-                <span>Call {BUSINESS_INFO.phoneDisplay}</span>
+                <span>Call {siteSettings.phoneDisplay}</span>
               </a>
 
               <button

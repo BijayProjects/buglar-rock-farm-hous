@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { MapPin, Phone, Navigation, Copy, Check, Car, Compass, Clock } from 'lucide-react';
-import { BUSINESS_INFO } from '../data/restaurantData';
+import { useCMS } from '../context/CMSContext';
 
 export const LocationSection: React.FC = () => {
+  const { siteSettings } = useCMS();
   const [copied, setCopied] = useState(false);
 
   const handleCopyAddress = () => {
-    navigator.clipboard.writeText(`${BUSINESS_INFO.name}, ${BUSINESS_INFO.address}`);
+    navigator.clipboard.writeText(`${siteSettings.name}, ${siteSettings.address}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -32,7 +33,7 @@ export const LocationSection: React.FC = () => {
             Worth the Journey.
           </h2>
           <p className="text-base sm:text-lg text-[#1F2421]/80 font-light leading-relaxed">
-            Located in the serene hills of Lalitpur 44709 near Godawari, Buglay Rock Farm House is an easy 30-minute escape from Kathmandu valley's bustle.
+            Located in the serene hills of {siteSettings.address} near Godawari, {siteSettings.name} is an easy 30-minute escape from Kathmandu valley's bustle.
           </p>
         </div>
 
@@ -48,28 +49,28 @@ export const LocationSection: React.FC = () => {
 
               <div>
                 <h3 className="font-serif text-3xl font-bold text-[#FDFAF5] mb-2">
-                  {BUSINESS_INFO.name}
+                  {siteSettings.name}
                 </h3>
                 <p className="text-sm text-[#EFE9DD]/80 flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-[#E08E45] shrink-0" />
-                  <span>{BUSINESS_INFO.address}</span>
+                  <span>{siteSettings.address}</span>
                 </p>
                 <p className="text-xs text-[#E08E45] font-medium mt-1 ml-6">
-                  {BUSINESS_INFO.locationContext}
+                  {siteSettings.locationContext}
                 </p>
               </div>
 
               <div className="pt-4 border-t border-[#254F3D] space-y-3">
                 <div className="flex items-center justify-between text-xs text-[#EFE9DD]/90">
                   <span className="font-medium text-[#EFE9DD]/70">Direct Phone:</span>
-                  <a href={`tel:${BUSINESS_INFO.phone}`} className="font-bold text-[#E08E45] hover:underline">
-                    {BUSINESS_INFO.phoneDisplay}
+                  <a href={`tel:${siteSettings.phone}`} className="font-bold text-[#E08E45] hover:underline">
+                    {siteSettings.phoneDisplay}
                   </a>
                 </div>
 
                 <div className="flex items-center justify-between text-xs text-[#EFE9DD]/90">
                   <span className="font-medium text-[#EFE9DD]/70">Rating:</span>
-                  <span className="font-bold text-[#E08E45]">★ 4.9 / 5 (150+ Reviews)</span>
+                  <span className="font-bold text-[#E08E45]">★ {siteSettings.rating} / 5 ({siteSettings.reviewCount} Reviews)</span>
                 </div>
 
                 <div className="flex items-center justify-between text-xs text-[#EFE9DD]/90">
@@ -82,7 +83,7 @@ export const LocationSection: React.FC = () => {
             {/* Quick Action Buttons */}
             <div className="space-y-3 pt-4 border-t border-[#254F3D]">
               <a
-                href={BUSINESS_INFO.googleMapsUrl}
+                href={siteSettings.googleMapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-3.5 px-4 rounded-2xl bg-[#E08E45] text-[#10261D] font-bold text-sm hover:bg-[#C87D32] transition-colors shadow-lg flex items-center justify-center gap-2"
@@ -92,7 +93,7 @@ export const LocationSection: React.FC = () => {
               </a>
 
               <a
-                href={`tel:${BUSINESS_INFO.phone}`}
+                href={`tel:${siteSettings.phone}`}
                 className="w-full py-3 px-4 rounded-2xl bg-[#254F3D] text-[#FDFAF5] font-semibold text-sm hover:bg-[#336B53] transition-colors flex items-center justify-center gap-2"
               >
                 <Phone className="w-4 h-4 text-[#E08E45]" />
@@ -144,14 +145,14 @@ export const LocationSection: React.FC = () => {
 
               <div className="relative z-10 max-w-md space-y-2">
                 <h4 className="font-serif font-bold text-2xl text-[#FDFAF5]">
-                  Buglay Rock Farm House Pin
+                  {siteSettings.name} Pin
                 </h4>
                 <p className="text-xs text-[#EFE9DD]/80">
-                  Lalitpur 44709, Godawari Road Area, Nepal
+                  {siteSettings.address}, {siteSettings.locationContext}
                 </p>
                 <div className="pt-2">
                   <a
-                    href={BUSINESS_INFO.googleMapsUrl}
+                    href={siteSettings.googleMapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#254F3D] text-[#E08E45] hover:bg-[#E08E45] hover:text-[#10261D] text-xs font-bold transition-all border border-[#E08E45]/40"

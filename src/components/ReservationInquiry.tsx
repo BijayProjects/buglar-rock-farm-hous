@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Phone, Navigation, Send, CheckCircle2, Clock, X } from 'lucide-react';
-import { BUSINESS_INFO } from '../data/restaurantData';
+import { useCMS } from '../context/CMSContext';
 import { InquiryFormData } from '../types';
 
 interface ReservationInquiryProps {
@@ -12,6 +12,7 @@ export const ReservationInquiry: React.FC<ReservationInquiryProps> = ({
   isOpenModal,
   onCloseModal,
 }) => {
+  const { siteSettings, addInquiry } = useCMS();
   const [formData, setFormData] = useState<InquiryFormData>({
     fullName: '',
     phone: '',
@@ -26,6 +27,7 @@ export const ReservationInquiry: React.FC<ReservationInquiryProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    addInquiry(formData);
     setSubmitted(true);
   };
 
@@ -41,14 +43,14 @@ export const ReservationInquiry: React.FC<ReservationInquiryProps> = ({
             Inquiry Received!
           </h3>
           <p className="text-xs sm:text-sm text-[#EFE9DD]/80 max-w-md mx-auto leading-relaxed">
-            Thank you, <strong className="text-white">{formData.fullName}</strong>. Our team at Buglay Rock Farm House will call your phone (<span className="text-[#E08E45] font-semibold">{formData.phone}</span>) shortly to confirm your table for <strong className="text-white">{formData.visitDate || 'your requested date'}</strong>.
+            Thank you, <strong className="text-white">{formData.fullName}</strong>. Our team at {siteSettings.name} will call your phone (<span className="text-[#E08E45] font-semibold">{formData.phone}</span>) shortly to confirm your table for <strong className="text-white">{formData.visitDate || 'your requested date'}</strong>.
           </p>
           <div className="pt-3 flex flex-col sm:flex-row gap-3 justify-center">
             <a
-              href={`tel:${BUSINESS_INFO.phone}`}
+              href={`tel:${siteSettings.phone}`}
               className="px-5 py-2.5 rounded-xl bg-[#E08E45] text-[#10261D] font-bold text-xs sm:text-sm hover:bg-[#C87D32] transition-colors shadow"
             >
-              Call {BUSINESS_INFO.phoneDisplay}
+              Call {siteSettings.phoneDisplay}
             </a>
             <button
               onClick={() => setSubmitted(false)}
@@ -233,8 +235,8 @@ export const ReservationInquiry: React.FC<ReservationInquiryProps> = ({
           <div className="p-4 sm:p-6 md:p-7 overflow-y-auto flex-1">
             <div className="mb-4 text-xs text-[#EFE9DD]/80">
               For instant same-day table reservation, call us directly at{' '}
-              <a href={`tel:${BUSINESS_INFO.phone}`} className="text-[#E08E45] font-bold underline">
-                {BUSINESS_INFO.phoneDisplay}
+              <a href={`tel:${siteSettings.phone}`} className="text-[#E08E45] font-bold underline">
+                {siteSettings.phoneDisplay}
               </a>
             </div>
             {renderFormFields()}
@@ -259,8 +261,8 @@ export const ReservationInquiry: React.FC<ReservationInquiryProps> = ({
             </h2>
             <p className="text-sm text-[#EFE9DD]/80 font-light">
               Fill out your visit details below. For instant same-day table confirmation, please call us directly at{' '}
-              <a href={`tel:${BUSINESS_INFO.phone}`} className="text-[#E08E45] font-bold underline">
-                {BUSINESS_INFO.phoneDisplay}
+              <a href={`tel:${siteSettings.phone}`} className="text-[#E08E45] font-bold underline">
+                {siteSettings.phoneDisplay}
               </a>
               .
             </p>
@@ -271,21 +273,21 @@ export const ReservationInquiry: React.FC<ReservationInquiryProps> = ({
           {/* Quick Contact Buttons Row */}
           <div className="mt-8 pt-6 border-t border-[#254F3D] grid grid-cols-1 sm:grid-cols-2 gap-4">
             <a
-              href={`tel:${BUSINESS_INFO.phone}`}
+              href={`tel:${siteSettings.phone}`}
               className="p-4 rounded-2xl bg-[#1A382B] border border-[#254F3D] hover:border-[#E08E45] transition-colors flex items-center justify-between"
             >
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-[#E08E45]" />
                 <div>
                   <span className="block text-xs text-[#EFE9DD]/70">Call Restaurant Directly</span>
-                  <span className="font-bold text-sm text-[#FDFAF5]">{BUSINESS_INFO.phoneDisplay}</span>
+                  <span className="font-bold text-sm text-[#FDFAF5]">{siteSettings.phoneDisplay}</span>
                 </div>
               </div>
               <span className="text-xs font-bold text-[#E08E45]">Call Now →</span>
             </a>
 
             <a
-              href={BUSINESS_INFO.googleMapsUrl}
+              href={siteSettings.googleMapsUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="p-4 rounded-2xl bg-[#1A382B] border border-[#254F3D] hover:border-[#E08E45] transition-colors flex items-center justify-between"
@@ -294,7 +296,7 @@ export const ReservationInquiry: React.FC<ReservationInquiryProps> = ({
                 <Navigation className="w-5 h-5 text-[#E08E45]" />
                 <div>
                   <span className="block text-xs text-[#EFE9DD]/70">Get GPS Directions</span>
-                  <span className="font-bold text-sm text-[#FDFAF5]">Lalitpur 44709, Nepal</span>
+                  <span className="font-bold text-sm text-[#FDFAF5]">{siteSettings.address}</span>
                 </div>
               </div>
               <span className="text-xs font-bold text-[#E08E45]">Map →</span>
