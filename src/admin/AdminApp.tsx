@@ -11,6 +11,7 @@ import { AdminGallery } from './AdminGallery';
 import { AdminReviews } from './AdminReviews';
 import { AdminInquiries } from './AdminInquiries';
 import { AdminPages } from './AdminPages';
+import { AdminNavigation } from './AdminNavigation';
 import { AdminSettings } from './AdminSettings';
 import { AdminBackup } from './AdminBackup';
 
@@ -46,6 +47,7 @@ export const AdminApp: React.FC<AdminAppProps> = ({ onBackToSite }) => {
       {currentTab === 'reviews' && <AdminReviews />}
       {currentTab === 'inquiries' && <AdminInquiries />}
       {currentTab === 'pages' && <AdminPages />}
+      {currentTab === 'navigation' && <AdminNavigation />}
       {currentTab === 'settings' && <AdminSettings />}
       {currentTab === 'backup' && <AdminBackup />}
     </AdminLayout>

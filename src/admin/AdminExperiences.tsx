@@ -72,10 +72,8 @@ export const AdminExperiences: React.FC = () => {
   };
 
   const handleDelete = (id: string, name: string) => {
-    if (window.confirm(`Delete experience "${name}"?`)) {
-      deleteExperience(id);
-      showNotice(`Experience "${name}" deleted.`);
-    }
+    deleteExperience(id);
+    showNotice(`Experience "${name}" deleted.`);
   };
 
   return (

@@ -60,11 +60,13 @@ export const AdminPages: React.FC = () => {
   const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
   const [pageSearchQuery, setPageSearchQuery] = useState('');
   const [pageStatusFilter, setPageStatusFilter] = useState<'all' | 'published' | 'draft'>('all');
+  const [pagePendingDeleteId, setPagePendingDeleteId] = useState<string | null>(null);
 
   // Blog Editing State
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [postSearchQuery, setPostSearchQuery] = useState('');
   const [postCategoryFilter, setPostCategoryFilter] = useState('all');
+  const [postPendingDeleteId, setPostPendingDeleteId] = useState<string | null>(null);
 
   // New ACF Field Modal/Row State for Page
   const [newPageFieldKey, setNewPageFieldKey] = useState('');
@@ -151,7 +153,7 @@ export const AdminPages: React.FC = () => {
     setNewPageSubtitle('');
     setShowNewPageModal(false);
     setSelectedPageId(created.id);
-    showNotice(`Page "${created.title}" created successfully with ACF fields!`);
+    showNotice(`Page "${created.title}" created successfully with Custom Fields!`);
   };
 
   // Handlers for Blog Creation
@@ -175,7 +177,7 @@ export const AdminPages: React.FC = () => {
       ]
     });
     setSelectedPostId(created.id);
-    showNotice('New draft blog post created! Customize content and ACF fields below.');
+    showNotice('New draft blog post created! Customize content and Custom Fields below.');
   };
 
   // Add ACF Field to Selected Page
@@ -200,7 +202,7 @@ export const AdminPages: React.FC = () => {
     setNewPageFieldLabel('');
     setNewPageFieldDesc('');
     setShowAddPageField(false);
-    showNotice(`Custom ACF Field "${newPageFieldLabel}" added to page!`);
+    showNotice(`Custom Field "${newPageFieldLabel}" added to page!`);
   };
 
   // Add ACF Field to Selected Post
@@ -223,7 +225,7 @@ export const AdminPages: React.FC = () => {
     setNewPostFieldKey('');
     setNewPostFieldLabel('');
     setShowAddPostField(false);
-    showNotice(`Custom ACF Field "${newPostFieldLabel}" added to post!`);
+    showNotice(`Custom Field "${newPostFieldLabel}" added to post!`);
   };
 
   return (
@@ -236,11 +238,11 @@ export const AdminPages: React.FC = () => {
               Pages & Content Management
             </h1>
             <span className="px-2.5 py-0.5 rounded text-[11px] font-bold bg-[#E08E45]/15 text-[#9C5D1F] border border-[#E08E45]/30">
-              WordPress ACF Engine
+              Custom Fields Engine
             </span>
           </div>
           <p className="text-xs text-gray-600 font-light mt-1">
-            Dynamic lists and WordPress Advanced Custom Fields (ACF) editor for all available pages and blog posts.
+            Dynamic lists and Custom Fields editor for all available pages and blog posts.
           </p>
         </div>
 
@@ -358,7 +360,7 @@ export const AdminPages: React.FC = () => {
                       <tr className="bg-[#f6f7f7] border-b border-[#c3c4c7] text-[#50575e] font-semibold">
                         <th className="py-3 px-4">Page Title & Slug</th>
                         <th className="py-3 px-3">Template</th>
-                        <th className="py-3 px-3">ACF Custom Fields</th>
+                        <th className="py-3 px-3">Custom Fields</th>
                         <th className="py-3 px-3">Nav Label</th>
                         <th className="py-3 px-3">Status</th>
                         <th className="py-3 px-3">Modified</th>
@@ -391,7 +393,7 @@ export const AdminPages: React.FC = () => {
                                 className="hover:underline font-semibold flex items-center gap-1"
                               >
                                 <Edit3 className="w-3 h-3" />
-                                <span>Edit ACF Fields</span>
+                                <span>Edit Custom Fields</span>
                               </button>
                               <span className="text-gray-300">|</span>
                               <button
@@ -408,17 +410,34 @@ export const AdminPages: React.FC = () => {
                               {page.id !== 'home' && (
                                 <>
                                   <span className="text-gray-300">|</span>
-                                  <button
-                                    onClick={() => {
-                                      if (confirm(`Delete page "${page.title}"?`)) {
-                                        deletePage(page.id);
-                                        showNotice(`Page "${page.title}" deleted.`);
-                                      }
-                                    }}
-                                    className="hover:underline text-[#d63638]"
-                                  >
-                                    Trash
-                                  </button>
+                                  {pagePendingDeleteId === page.id ? (
+                                    <span className="inline-flex items-center gap-1 bg-red-50 text-red-700 px-1.5 py-0.5 rounded text-[10px]">
+                                      <span>Delete?</span>
+                                      <button
+                                        onClick={() => {
+                                          deletePage(page.id);
+                                          setPagePendingDeleteId(null);
+                                          showNotice(`Page "${page.title}" deleted.`);
+                                        }}
+                                        className="font-bold underline text-red-700 hover:text-red-900"
+                                      >
+                                        Yes
+                                      </button>
+                                      <button
+                                        onClick={() => setPagePendingDeleteId(null)}
+                                        className="text-gray-500 hover:text-gray-700"
+                                      >
+                                        No
+                                      </button>
+                                    </span>
+                                  ) : (
+                                    <button
+                                      onClick={() => setPagePendingDeleteId(page.id)}
+                                      className="hover:underline text-[#d63638]"
+                                    >
+                                      Trash
+                                    </button>
+                                  )}
                                 </>
                               )}
                             </div>
@@ -463,7 +482,7 @@ export const AdminPages: React.FC = () => {
                               className="px-3 py-1.5 bg-[#f0f0f1] hover:bg-[#2271b1] hover:text-white text-[#2c3338] font-semibold rounded transition-colors text-xs inline-flex items-center gap-1.5"
                             >
                               <Settings2 className="w-3.5 h-3.5" />
-                              <span>Edit ACF</span>
+                              <span>Edit Custom Fields</span>
                             </button>
                           </td>
                         </tr>
@@ -525,7 +544,7 @@ export const AdminPages: React.FC = () => {
                   </label>
 
                   <button
-                    onClick={() => showNotice('All ACF field values and page metadata saved to database!')}
+                    onClick={() => showNotice('All Custom Field values and page metadata saved to database!')}
                     className="px-4 py-2 bg-[#2271b1] hover:bg-[#135e96] text-white font-bold text-xs rounded shadow flex items-center gap-1.5"
                   >
                     <Save className="w-4 h-4" />
@@ -603,9 +622,9 @@ export const AdminPages: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Metabox 2: WordPress ACF (Advanced Custom Fields) Group with Drag and Drop Position Rearranging */}
+                  {/* Metabox 2: Custom Fields Group with Drag and Drop Position Rearranging */}
                   <DraggableAcfFieldGroup
-                    title="Advanced Custom Fields (ACF Field Group)"
+                    title="Custom Fields (Page Content Blocks)"
                     description="Edit the exact key-value fields powering this page's layout and content. Drag to rearrange position and set ordering."
                     fields={selectedPage.acfFields || []}
                     onUpdateField={(key, val) => updatePageAcfField(selectedPage.id, key, val)}
@@ -660,7 +679,7 @@ export const AdminPages: React.FC = () => {
                   <div className="bg-white p-4 rounded-lg border border-[#c3c4c7] shadow-sm space-y-2">
                     <h3 className="font-bold text-xs text-[#1d2327]">Page Template</h3>
                     <p className="text-[11px] text-gray-500 font-light">
-                      This page uses the <strong>{selectedPage.template}</strong> template. ACF fields mapped here automatically populate the designated display components on the live site.
+                      This page uses the <strong>{selectedPage.template}</strong> template. Custom Fields mapped here automatically populate the designated display components on the live site.
                     </p>
                   </div>
                 </div>
@@ -773,17 +792,34 @@ export const AdminPages: React.FC = () => {
                                     Duplicate
                                   </button>
                                   <span className="text-gray-300">|</span>
-                                  <button
-                                    onClick={() => {
-                                      if (confirm(`Delete post "${post.title}"?`)) {
-                                        deleteBlogPost(post.id);
-                                        showNotice('Post deleted from database.');
-                                      }
-                                    }}
-                                    className="hover:underline text-[#d63638]"
-                                  >
-                                    Trash
-                                  </button>
+                                  {postPendingDeleteId === post.id ? (
+                                    <span className="inline-flex items-center gap-1 bg-red-50 text-red-700 px-1.5 py-0.5 rounded text-[10px]">
+                                      <span>Delete?</span>
+                                      <button
+                                        onClick={() => {
+                                          deleteBlogPost(post.id);
+                                          setPostPendingDeleteId(null);
+                                          showNotice('Post deleted from database.');
+                                        }}
+                                        className="font-bold underline text-red-700 hover:text-red-900"
+                                      >
+                                        Yes
+                                      </button>
+                                      <button
+                                        onClick={() => setPostPendingDeleteId(null)}
+                                        className="text-gray-500 hover:text-gray-700"
+                                      >
+                                        No
+                                      </button>
+                                    </span>
+                                  ) : (
+                                    <button
+                                      onClick={() => setPostPendingDeleteId(post.id)}
+                                      className="hover:underline text-[#d63638]"
+                                    >
+                                      Trash
+                                    </button>
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -898,7 +934,7 @@ export const AdminPages: React.FC = () => {
 
                   <button
                     onClick={() => {
-                      showNotice('Blog post and ACF parameters saved!');
+                      showNotice('Blog post and Custom Fields saved!');
                       setSelectedPostId(null);
                     }}
                     className="px-4 py-2 bg-[#2271b1] hover:bg-[#135e96] text-white font-bold text-xs rounded shadow flex items-center gap-1.5"
@@ -972,9 +1008,9 @@ export const AdminPages: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Blog ACF Metabox with Drag & Drop Position Reordering */}
+                  {/* Blog Custom Fields Metabox with Drag & Drop Position Reordering */}
                   <DraggableAcfFieldGroup
-                    title="Post ACF Custom Fields (Specific Highlights)"
+                    title="Post Custom Fields (Specific Highlights)"
                     description="Add custom attributes like event schedules, key recipes, coordinates, or special dish pairings. Drag to rearrange position and set ordering."
                     fields={selectedPost.acfFields || []}
                     onUpdateField={(key, val) => updateBlogPostAcfField(selectedPost.id, key, val)}

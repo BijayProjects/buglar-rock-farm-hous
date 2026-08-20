@@ -181,6 +181,18 @@ export interface MediaItem {
   category?: 'all' | 'food' | 'farmhouse' | 'nature' | 'events' | 'branding' | string;
 }
 
+export interface NavMenuItem {
+  id: string;
+  label: string;
+  pageId?: string;
+  url?: string;
+  target?: '_self' | '_blank';
+  icon?: string;
+  isVisible: boolean;
+  order: number;
+  highlight?: boolean;
+}
+
 export interface CMSDataState {
   siteSettings: SiteSettings;
   menuItems: MenuItem[];
@@ -193,4 +205,5 @@ export interface CMSDataState {
   blogPosts: BlogPost[];
   notifications: AdminNotification[];
   mediaLibrary: MediaItem[];
+  navigationMenu: NavMenuItem[];
 }

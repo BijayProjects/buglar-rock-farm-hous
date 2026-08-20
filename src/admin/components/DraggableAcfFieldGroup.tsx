@@ -28,7 +28,7 @@ interface DraggableAcfFieldGroupProps {
 }
 
 export const DraggableAcfFieldGroup: React.FC<DraggableAcfFieldGroupProps> = ({
-  title = 'Advanced Custom Fields (ACF Field Group)',
+  title = 'Custom Fields (Custom Field Group)',
   description = "Edit the exact key-value fields powering this page's layout and content. Drag to rearrange section order.",
   fields,
   onUpdateField,
@@ -41,6 +41,7 @@ export const DraggableAcfFieldGroup: React.FC<DraggableAcfFieldGroupProps> = ({
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [confirmDeleteKey, setConfirmDeleteKey] = useState<string | null>(null);
 
   // New field form state
   const [newLabel, setNewLabel] = useState('');
@@ -138,7 +139,7 @@ export const DraggableAcfFieldGroup: React.FC<DraggableAcfFieldGroupProps> = ({
     });
 
     if (onShowNotice) {
-      onShowNotice(`Custom ACF field "${newLabel}" added!`);
+      onShowNotice(`Custom Field "${newLabel}" added!`);
     }
 
     setNewLabel('');
@@ -149,7 +150,7 @@ export const DraggableAcfFieldGroup: React.FC<DraggableAcfFieldGroupProps> = ({
   };
 
   return (
-    <div id="acf-field-group-container" className="bg-white p-5 rounded-lg border border-[#c3c4c7] shadow-sm space-y-4">
+    <div id="custom-field-group-container" className="bg-white p-5 rounded-lg border border-[#c3c4c7] shadow-sm space-y-4">
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-gray-200">
         <div>
@@ -166,12 +167,12 @@ export const DraggableAcfFieldGroup: React.FC<DraggableAcfFieldGroupProps> = ({
         <div className="flex items-center gap-2">
           <button
             type="button"
-            id="add-acf-field-button"
+            id="add-custom-field-button"
             onClick={() => setShowAddForm(!showAddForm)}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-[#f0f6fc] hover:bg-[#e1edfa] text-[#2271b1] hover:text-[#135e96] border border-[#2271b1]/30 hover:border-[#2271b1] font-bold text-xs rounded transition-colors shadow-sm"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>{showAddForm ? 'Close Form' : 'Add Custom ACF Field'}</span>
+            <span>{showAddForm ? 'Close Form' : 'Add Custom Field'}</span>
           </button>
         </div>
       </div>
@@ -180,7 +181,7 @@ export const DraggableAcfFieldGroup: React.FC<DraggableAcfFieldGroupProps> = ({
       {showAddForm && (
         <form
           onSubmit={handleCreateField}
-          id="new-acf-field-form"
+          id="new-custom-field-form"
           className="p-4 bg-gradient-to-br from-blue-50/70 to-indigo-50/50 rounded-lg border border-blue-200 space-y-3 transition-all"
         >
           <div className="flex items-center justify-between">
@@ -189,7 +190,7 @@ export const DraggableAcfFieldGroup: React.FC<DraggableAcfFieldGroupProps> = ({
               <span>Define New Custom Field</span>
             </span>
             <span className="text-[10px] text-blue-700 uppercase tracking-wider font-semibold">
-              ACF Schema
+              Field Schema
             </span>
           </div>
 
@@ -395,22 +396,43 @@ export const DraggableAcfFieldGroup: React.FC<DraggableAcfFieldGroupProps> = ({
                       <Copy className="w-3.5 h-3.5" />
                     </button>
 
-                    {/* Delete Field */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (confirm(`Delete custom field "${field.label}"?`)) {
-                          onDeleteField(field.key);
-                          if (onShowNotice) {
-                            onShowNotice(`Field "${field.label}" removed.`);
-                          }
-                        }
-                      }}
-                      className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-colors"
-                      title="Delete Field"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    {/* Delete Field with Inline Confirmation */}
+                    {confirmDeleteKey === field.key ? (
+                      <div className="flex items-center gap-1.5 bg-red-50 border border-red-200 px-2 py-0.5 rounded shadow-sm">
+                        <span className="text-[10px] font-bold text-red-700">Delete?</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onDeleteField(field.key);
+                            setConfirmDeleteKey(null);
+                            if (onShowNotice) {
+                              onShowNotice(`Field "${field.label}" deleted.`);
+                            }
+                          }}
+                          className="px-2 py-0.5 bg-red-600 hover:bg-red-700 text-white font-bold text-[10px] rounded transition-colors"
+                          title="Confirm Delete"
+                        >
+                          Yes, Delete
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setConfirmDeleteKey(null)}
+                          className="px-1.5 py-0.5 text-gray-500 hover:text-gray-800 text-[10px] rounded hover:bg-gray-200 transition-colors"
+                          title="Cancel"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setConfirmDeleteKey(field.key)}
+                        className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-colors"
+                        title="Delete Field"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
                 </div>
 

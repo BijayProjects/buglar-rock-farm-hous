@@ -70,10 +70,8 @@ export const AdminReviews: React.FC = () => {
   };
 
   const handleDelete = (id: string, name: string) => {
-    if (window.confirm(`Delete review from "${name}"?`)) {
-      deleteTestimonial(id);
-      showNotice(`Review from "${name}" deleted.`);
-    }
+    deleteTestimonial(id);
+    showNotice(`Review from "${name}" deleted.`);
   };
 
   return (

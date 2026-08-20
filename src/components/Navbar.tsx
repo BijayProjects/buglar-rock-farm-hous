@@ -1,6 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import { Phone, PhoneCall, MapPin, Menu as MenuIcon, X, Sparkles, Compass, Utensils, Calendar, CalendarCheck, Image as ImageIcon, Info, BookOpen } from 'lucide-react';
+import {
+  Phone,
+  PhoneCall,
+  MapPin,
+  Menu as MenuIcon,
+  X,
+  Sparkles,
+  Compass,
+  Utensils,
+  Calendar,
+  CalendarCheck,
+  Image as ImageIcon,
+  Info,
+  BookOpen,
+  Coffee,
+  Wine,
+  Music,
+  Heart,
+  Star,
+  Flame,
+  FileText,
+  ExternalLink,
+  Navigation as NavigationIcon,
+  Link as LinkIcon,
+} from 'lucide-react';
 import { useCMS } from '../context/CMSContext';
+
+const NAV_ICON_LOOKUP: Record<string, React.ComponentType<{ className?: string }>> = {
+  Compass,
+  Sparkles,
+  Utensils,
+  Info,
+  Calendar,
+  Image: ImageIcon,
+  BookOpen,
+  MapPin,
+  Coffee,
+  Wine,
+  Music,
+  Heart,
+  Star,
+  Phone,
+  Flame,
+  FileText,
+  ExternalLink,
+  Navigation: NavigationIcon,
+  Link: LinkIcon,
+};
 
 interface NavbarProps {
   onOpenInquiry: () => void;
@@ -13,7 +59,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   currentPage,
   onNavigate,
 }) => {
-  const { siteSettings } = useCMS();
+  const { siteSettings, navigationMenu } = useCMS();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -41,20 +87,20 @@ export const Navbar: React.FC<NavbarProps> = ({
     };
   }, [mobileMenuOpen]);
 
-  const navLinks = [
-    { id: 'home', name: 'Home', href: '#home', icon: Compass },
-    { id: 'experience', name: 'Experience', href: '#experience', icon: Sparkles },
-    { id: 'menu', name: 'Menu', href: '#menu', icon: Utensils },
-    { id: 'story', name: 'Story', href: '#story', icon: Info },
-    { id: 'events', name: 'Events', href: '#events', icon: Calendar },
-    { id: 'gallery', name: 'Gallery', href: '#gallery', icon: ImageIcon },
-    { id: 'blog', name: 'Blog', href: '#blog', icon: BookOpen },
-    { id: 'location', name: 'Location', href: '#location', icon: MapPin },
-  ];
+  // Dynamic visible navigation links sorted by order
+  const visibleNavLinks = (navigationMenu || [])
+    .filter((item) => item.isVisible !== false)
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
 
-  const handleNavClick = (pageId: string, e: React.MouseEvent) => {
+  const handleNavClick = (pageId: string | undefined, url: string | undefined, target: string | undefined, e: React.MouseEvent) => {
+    if (target === '_blank' || (url && (url.startsWith('http://') || url.startsWith('https://')))) {
+      // External link: allow normal anchor navigation
+      return;
+    }
+
     e.preventDefault();
-    onNavigate(pageId);
+    const targetPage = pageId || (url ? url.replace(/^#/, '') : 'home');
+    onNavigate(targetPage);
     setMobileMenuOpen(false);
   };
 
@@ -73,7 +119,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="flex items-center shrink-0">
               <a
                 href="#home"
-                onClick={(e) => handleNavClick('home', e)}
+                onClick={(e) => handleNavClick('home', '#home', '_self', e)}
                 className="group flex items-center"
                 aria-label="Buglay Rock Farm House Home"
               >
@@ -89,21 +135,29 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             {/* Center: Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-7 absolute left-1/2 -translate-x-1/2">
-              {navLinks.map((link) => {
-                const isActive = currentPage === link.id;
+            <nav className="hidden lg:flex items-center gap-6 absolute left-1/2 -translate-x-1/2">
+              {visibleNavLinks.map((link) => {
+                const targetPage = link.pageId || (link.url ? link.url.replace(/^#/, '') : '');
+                const isActive = currentPage === targetPage;
+                const isExternal = link.target === '_blank' || (link.url && (link.url.startsWith('http://') || link.url.startsWith('https://')));
+
                 return (
                   <a
-                    key={link.name}
-                    href={link.href}
-                    onClick={(e) => handleNavClick(link.id, e)}
-                    className={`text-sm font-medium transition-colors relative py-1 ${
-                      isActive
+                    key={link.id}
+                    href={link.url || `#${link.pageId || 'home'}`}
+                    target={link.target || '_self'}
+                    rel={isExternal ? 'noopener noreferrer' : undefined}
+                    onClick={(e) => handleNavClick(link.pageId, link.url, link.target, e)}
+                    className={`text-sm font-medium transition-colors relative py-1 flex items-center gap-1.5 ${
+                      link.highlight
+                        ? 'px-3 py-1 rounded-full bg-[#E08E45] text-[#10261D] font-bold shadow hover:bg-[#C87D32]'
+                        : isActive
                         ? 'text-[#E08E45] font-semibold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-[#E08E45]'
                         : 'text-[#FDFAF5]/90 hover:text-[#E08E45] after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#E08E45] hover:after:w-full after:transition-all'
                     }`}
                   >
-                    {link.name}
+                    <span>{link.label}</span>
+                    {isExternal && <ExternalLink className="w-3 h-3 opacity-70" />}
                   </a>
                 );
               })}
@@ -130,7 +184,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </a>
             </div>
 
-            {/* Mobile / Tablet Header Controls (strictly visible below lg screen width) */}
+            {/* Mobile / Tablet Header Controls */}
             <div className="flex items-center gap-2 lg:hidden">
               <button
                 onClick={onOpenInquiry}
@@ -207,30 +261,40 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               {/* Navigation Links list */}
               <nav className="space-y-1.5" aria-label="Mobile Navigation">
-                {navLinks.map((link) => {
-                  const Icon = link.icon;
-                  const isActive = currentPage === link.id;
+                {visibleNavLinks.map((link) => {
+                  const IconComp = NAV_ICON_LOOKUP[link.icon || 'Compass'] || Compass;
+                  const targetPage = link.pageId || (link.url ? link.url.replace(/^#/, '') : '');
+                  const isActive = currentPage === targetPage;
+                  const isExternal = link.target === '_blank' || (link.url && (link.url.startsWith('http://') || link.url.startsWith('https://')));
+
                   return (
                     <a
-                      key={link.name}
-                      href={link.href}
-                      onClick={(e) => handleNavClick(link.id, e)}
+                      key={link.id}
+                      href={link.url || `#${link.pageId || 'home'}`}
+                      target={link.target || '_self'}
+                      rel={isExternal ? 'noopener noreferrer' : undefined}
+                      onClick={(e) => handleNavClick(link.pageId, link.url, link.target, e)}
                       className={`flex items-center gap-3.5 px-3.5 py-3 rounded-xl text-base font-medium transition-all group ${
-                        isActive
+                        link.highlight
+                          ? 'bg-[#E08E45] text-[#10261D] font-bold shadow-md'
+                          : isActive
                           ? 'bg-[#254F3D] text-[#E08E45] font-semibold border border-[#E08E45]/30'
                           : 'text-[#FDFAF5] hover:bg-[#254F3D] hover:text-[#E08E45]'
                       }`}
                     >
                       <div
                         className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-                          isActive
+                          link.highlight
+                            ? 'bg-[#10261D] text-[#E08E45]'
+                            : isActive
                             ? 'bg-[#E08E45] text-[#10261D]'
                             : 'bg-[#254F3D]/60 text-[#E08E45] group-hover:bg-[#E08E45]/20'
                         }`}
                       >
-                        <Icon className="w-4 h-4" />
+                        <IconComp className="w-4 h-4" />
                       </div>
-                      <span className="tracking-wide">{link.name}</span>
+                      <span className="tracking-wide flex-1">{link.label}</span>
+                      {isExternal && <ExternalLink className="w-4 h-4 opacity-60" />}
                     </a>
                   );
                 })}
@@ -264,3 +328,4 @@ export const Navbar: React.FC<NavbarProps> = ({
     </>
   );
 };
+

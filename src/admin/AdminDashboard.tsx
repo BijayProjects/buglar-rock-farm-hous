@@ -208,7 +208,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <div className="text-xl font-bold font-serif text-[#10261D]">{pages?.length || 8}</div>
                 <div className="text-[11px] text-[#50575e] font-medium flex items-center gap-1 mt-1">
                   <FileText className="w-3 h-3 text-[#2271b1]" />
-                  <span>Pages (ACF)</span>
+                  <span>Pages & Content</span>
                 </div>
               </div>
 

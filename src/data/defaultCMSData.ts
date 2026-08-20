@@ -1,4 +1,4 @@
-import { CMSDataState, EventPackage, InquiryRecord, PageItem, BlogPost, SiteSettings, MediaItem } from '../types';
+import { CMSDataState, EventPackage, InquiryRecord, PageItem, BlogPost, SiteSettings, MediaItem, NavMenuItem } from '../types';
 import { BUSINESS_INFO, EXPERIENCES, SAMPLE_MENU, GALLERY_ITEMS, TESTIMONIALS } from './restaurantData';
 
 export const INITIAL_MEDIA_LIBRARY: MediaItem[] = [
@@ -549,6 +549,17 @@ export const INITIAL_SITE_SETTINGS: SiteSettings = {
   ]
 };
 
+export const INITIAL_NAV_MENU: NavMenuItem[] = [
+  { id: 'nav-home', label: 'Home', pageId: 'home', url: '#home', icon: 'Compass', isVisible: true, order: 1 },
+  { id: 'nav-experience', label: 'Experience', pageId: 'experience', url: '#experience', icon: 'Sparkles', isVisible: true, order: 2 },
+  { id: 'nav-menu', label: 'Menu', pageId: 'menu', url: '#menu', icon: 'Utensils', isVisible: true, order: 3 },
+  { id: 'nav-story', label: 'Story', pageId: 'story', url: '#story', icon: 'Info', isVisible: true, order: 4 },
+  { id: 'nav-events', label: 'Events', pageId: 'events', url: '#events', icon: 'Calendar', isVisible: true, order: 5 },
+  { id: 'nav-gallery', label: 'Gallery', pageId: 'gallery', url: '#gallery', icon: 'Image', isVisible: true, order: 6 },
+  { id: 'nav-blog', label: 'Blog', pageId: 'blog', url: '#blog', icon: 'BookOpen', isVisible: true, order: 7 },
+  { id: 'nav-location', label: 'Location', pageId: 'location', url: '#location', icon: 'MapPin', isVisible: true, order: 8 },
+];
+
 export const DEFAULT_CMS_STATE: CMSDataState = {
   siteSettings: INITIAL_SITE_SETTINGS,
   menuItems: SAMPLE_MENU.map(item => ({ ...item, status: 'published' })),
@@ -561,4 +572,5 @@ export const DEFAULT_CMS_STATE: CMSDataState = {
   blogPosts: INITIAL_BLOG_POSTS,
   notifications: [],
   mediaLibrary: INITIAL_MEDIA_LIBRARY,
+  navigationMenu: INITIAL_NAV_MENU,
 };

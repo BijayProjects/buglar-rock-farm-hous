@@ -62,10 +62,8 @@ export const AdminGallery: React.FC = () => {
   };
 
   const handleDelete = (id: string, name: string) => {
-    if (window.confirm(`Delete photo "${name}"?`)) {
-      deleteGalleryItem(id);
-      showNotice(`Photo "${name}" deleted.`);
-    }
+    deleteGalleryItem(id);
+    showNotice(`Photo "${name}" deleted.`);
   };
 
   const filteredItems = galleryItems.filter(

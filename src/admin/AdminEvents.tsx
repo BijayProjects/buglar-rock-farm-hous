@@ -71,10 +71,8 @@ export const AdminEvents: React.FC = () => {
   };
 
   const handleDelete = (id: string, pkgName: string) => {
-    if (window.confirm(`Delete event package "${pkgName}"?`)) {
-      deleteEventPackage(id);
-      showNotice(`Package "${pkgName}" deleted.`);
-    }
+    deleteEventPackage(id);
+    showNotice(`Package "${pkgName}" deleted.`);
   };
 
   return (

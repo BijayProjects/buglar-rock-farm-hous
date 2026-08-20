@@ -14,8 +14,9 @@ import {
   SiteSettings,
   AdminNotification,
   MediaItem,
+  NavMenuItem,
 } from '../types';
-import { DEFAULT_CMS_STATE, INITIAL_PAGES, INITIAL_BLOG_POSTS, INITIAL_MEDIA_LIBRARY } from '../data/defaultCMSData';
+import { DEFAULT_CMS_STATE, INITIAL_PAGES, INITIAL_BLOG_POSTS, INITIAL_MEDIA_LIBRARY, INITIAL_NAV_MENU } from '../data/defaultCMSData';
 
 interface AdminUser {
   username: string;
@@ -36,6 +37,7 @@ interface CMSContextType {
   blogPosts: BlogPost[];
   notifications: AdminNotification[];
   mediaLibrary: MediaItem[];
+  navigationMenu: NavMenuItem[];
   unreadNotificationsCount: number;
   
   // Auth state
@@ -47,6 +49,14 @@ interface CMSContextType {
 
   // Site Settings
   updateSiteSettings: (updates: Partial<SiteSettings>) => void;
+
+  // Navigation Menu Management
+  addNavMenuItem: (item: Omit<NavMenuItem, 'id'>) => NavMenuItem;
+  updateNavMenuItem: (id: string, updates: Partial<NavMenuItem>) => void;
+  deleteNavMenuItem: (id: string) => void;
+  reorderNavMenuItems: (startIndex: number, endIndex: number) => void;
+  setNavMenuItems: (items: NavMenuItem[]) => void;
+  resetNavMenuToDefaults: () => void;
 
   // Media Library Management
   addMediaItem: (item: Omit<MediaItem, 'id' | 'uploadedAt'>) => MediaItem;
@@ -141,6 +151,7 @@ export const CMSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           mediaLibrary: parsed.mediaLibrary && parsed.mediaLibrary.length > 0 ? parsed.mediaLibrary : INITIAL_MEDIA_LIBRARY,
           pages: parsed.pages && parsed.pages.length > 0 ? parsed.pages : INITIAL_PAGES,
           blogPosts: parsed.blogPosts && parsed.blogPosts.length > 0 ? parsed.blogPosts : INITIAL_BLOG_POSTS,
+          navigationMenu: parsed.navigationMenu && parsed.navigationMenu.length > 0 ? parsed.navigationMenu : INITIAL_NAV_MENU,
           siteSettings: {
             ...DEFAULT_CMS_STATE.siteSettings,
             ...(parsed.siteSettings || {}),
@@ -316,6 +327,77 @@ export const CMSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         ...prev.siteSettings,
         ...updates,
       },
+    }));
+  };
+
+  // Navigation Menu Management
+  const addNavMenuItem = (item: Omit<NavMenuItem, 'id'>): NavMenuItem => {
+    const currentItems = data.navigationMenu || INITIAL_NAV_MENU;
+    const maxOrder = currentItems.length > 0 ? Math.max(...currentItems.map((i) => i.order || 0)) : 0;
+    const newItem: NavMenuItem = {
+      ...item,
+      id: `nav-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+      order: item.order !== undefined ? item.order : maxOrder + 1,
+      isVisible: item.isVisible !== undefined ? item.isVisible : true,
+    };
+    setData((prev) => ({
+      ...prev,
+      navigationMenu: [...(prev.navigationMenu || INITIAL_NAV_MENU), newItem],
+    }));
+    return newItem;
+  };
+
+  const updateNavMenuItem = (id: string, updates: Partial<NavMenuItem>) => {
+    setData((prev) => ({
+      ...prev,
+      navigationMenu: (prev.navigationMenu || INITIAL_NAV_MENU).map((item) =>
+        item.id === id ? { ...item, ...updates } : item
+      ),
+    }));
+  };
+
+  const deleteNavMenuItem = (id: string) => {
+    setData((prev) => ({
+      ...prev,
+      navigationMenu: (prev.navigationMenu || INITIAL_NAV_MENU).filter((item) => item.id !== id),
+    }));
+  };
+
+  const reorderNavMenuItems = (startIndex: number, endIndex: number) => {
+    setData((prev) => {
+      const currentList = [...(prev.navigationMenu || INITIAL_NAV_MENU)];
+      if (
+        startIndex < 0 ||
+        startIndex >= currentList.length ||
+        endIndex < 0 ||
+        endIndex >= currentList.length
+      ) {
+        return prev;
+      }
+      const [movedItem] = currentList.splice(startIndex, 1);
+      currentList.splice(endIndex, 0, movedItem);
+      const reindexed = currentList.map((item, idx) => ({
+        ...item,
+        order: idx + 1,
+      }));
+      return {
+        ...prev,
+        navigationMenu: reindexed,
+      };
+    });
+  };
+
+  const setNavMenuItems = (items: NavMenuItem[]) => {
+    setData((prev) => ({
+      ...prev,
+      navigationMenu: items.map((item, idx) => ({ ...item, order: idx + 1 })),
+    }));
+  };
+
+  const resetNavMenuToDefaults = () => {
+    setData((prev) => ({
+      ...prev,
+      navigationMenu: INITIAL_NAV_MENU,
     }));
   };
 
@@ -976,6 +1058,7 @@ export const CMSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         blogPosts: data.blogPosts || INITIAL_BLOG_POSTS,
         notifications: data.notifications || [],
         mediaLibrary: data.mediaLibrary || INITIAL_MEDIA_LIBRARY,
+        navigationMenu: data.navigationMenu || INITIAL_NAV_MENU,
         unreadNotificationsCount,
         isAuthenticated,
         adminUser,
@@ -983,6 +1066,12 @@ export const CMSProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         logout,
         updateAdminPassword,
         updateSiteSettings,
+        addNavMenuItem,
+        updateNavMenuItem,
+        deleteNavMenuItem,
+        reorderNavMenuItems,
+        setNavMenuItems,
+        resetNavMenuToDefaults,
         addMediaItem,
         updateMediaItem,
         deleteMediaItem,

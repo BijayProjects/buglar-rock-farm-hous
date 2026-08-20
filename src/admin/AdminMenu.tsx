@@ -96,10 +96,8 @@ export const AdminMenu: React.FC = () => {
   };
 
   const handleDelete = (id: string, name: string) => {
-    if (window.confirm(`Are you sure you want to delete "${name}" from the menu?`)) {
-      deleteMenuItem(id);
-      showNotice(`Dish "${name}" removed.`);
-    }
+    deleteMenuItem(id);
+    showNotice(`Dish "${name}" removed from menu.`);
   };
 
   const handleDuplicate = (id: string) => {
